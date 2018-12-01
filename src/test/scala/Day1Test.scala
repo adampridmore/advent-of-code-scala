@@ -36,7 +36,7 @@ class Day1Test extends org.scalatest.FunSuite {
     assert(sum === 553)
   }
 
-  def getFirstDuplicate: Int = {
+  def getFirstDuplicate(data: String): Int = {
     val values: Array[Int] = parseInputLines(data)
 
     val totals = new util.HashSet[Int]()
@@ -58,6 +58,6 @@ class Day1Test extends org.scalatest.FunSuite {
   }
 
   test("Day_1_part2_example") {
-    println(getFirstDuplicate)
+    println(getFirstDuplicate(data))
   }
 }
