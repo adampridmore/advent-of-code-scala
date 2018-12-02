@@ -24,6 +24,9 @@ aabcdd
 abcdee
 ababab"""
 
+  val realData = Source.fromResource("day2/input.txt").mkString
+
+
   test("parse_text_to_string_list") {
     var list = parseTextToLines(exampleData)
 
@@ -36,9 +39,7 @@ ababab"""
   }
 
   test("solve_day_part_1") {
-    val data = Source.fromResource("day2/input.txt").mkString
-
-    val result = new Day2(data).solution_part1()
+    val result = new Day2(realData).solution_part1()
 
     println(result)
     assert(result === 9139)
@@ -68,14 +69,7 @@ ababab"""
         else "")
     }
 
-    val data = parseTextToLines(
-      """abcde
-fghij
-klmno
-pqrst
-fguij
-axcye
-wvxyz""")
+    val data = parseTextToLines(realData)
 
     for(i <- 0 to data(0).length){
       val sortedData = data
@@ -86,11 +80,7 @@ wvxyz""")
         sortedData.zip(sortedData.drop(1))
           .filter({case(a,b) => a === b})
 
-      println(result.mkString(","))
-      if (result.contains()) println(result(0))
+      if (result.nonEmpty) println("Result: " + result(0)._1)
     }
-
-//    println(result.mkString("\r\n"))
   }
-
 }
