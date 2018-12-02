@@ -43,4 +43,54 @@ ababab"""
     println(result)
     assert(result === 9139)
   }
+
+  def areSimilar(str1: String, str2: String): Boolean = {
+    val differentCount =
+      str1
+      .zip(str2)
+      .count({case(c1, c2) => c1 != c2})
+
+    differentCount == 1
+  }
+
+  test("two_strings_that_are_not_similar"){
+    assert(areSimilar("abcde", "wvxyz") === false)
+  }
+
+  test("two_strings_that_are_similar"){
+    assert(areSimilar("fghij", "fguij") === true)
+  }
+
+  test("Scratch"){
+    def stripCharacterAt(index: Int, str: String): String ={
+      str.substring(0, index) +
+        (if (index < str.length) str.substring(index+1)
+        else "")
+    }
+
+    val data = parseTextToLines(
+      """abcde
+fghij
+klmno
+pqrst
+fguij
+axcye
+wvxyz""")
+
+    for(i <- 0 to data(0).length){
+      val sortedData = data
+        .map(s => stripCharacterAt(i, s))
+        .sortBy(identity)
+
+      val result =
+        sortedData.zip(sortedData.drop(1))
+          .filter({case(a,b) => a === b})
+
+      println(result.mkString(","))
+      if (result.contains()) println(result(0))
+    }
+
+//    println(result.mkString("\r\n"))
+  }
+
 }
