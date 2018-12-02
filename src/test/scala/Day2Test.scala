@@ -32,13 +32,13 @@ ababab"""
   }
 
   test("solve_example_day") {
-    assert(day_2_solver(exampleData) === 12)
+    assert(new Day2(exampleData).solution() === 12)
   }
 
   test("solve_day_part_1") {
     val data = Source.fromResource("day2/input.txt").mkString
 
-    val result = day_2_solver(data)
+    val result = new Day2(data).solution()
 
     println(result)
     assert(result === 9139)
