@@ -24,11 +24,10 @@ aabcdd
 abcdee
 ababab"""
 
-  val realData = Source.fromResource("day2/input.txt").mkString
-
+  private val realData = Source.fromResource("day2/input.txt").mkString
 
   test("parse_text_to_string_list") {
-    var list = parseTextToLines(exampleData)
+    val list = parseTextToLines(exampleData)
 
     assert(list.length === 7)
     assert(list(0) === "abcdef")
