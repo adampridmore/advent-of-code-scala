@@ -1,14 +1,13 @@
 import Day2._
 
 class Day2(data: String) {
-  def solution(): Int = {
+  def solution_part1(): Int = {
     val lines = parseTextToLines(data)
 
     val duplicatesCount = lines.count(hasTwoDuplicates)
     val triplicateCount = lines.count(hasThreeDuplicates)
 
-    val result = duplicatesCount * triplicateCount
-    result
+    duplicatesCount * triplicateCount
   }
 }
 
