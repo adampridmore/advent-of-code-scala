@@ -1,10 +1,19 @@
 case class Point2d(x: Int, y: Int) {}
+
+case class Cell(ids : List[String]) {
+  def this() = this(List.empty[String])
+
+  def add(id: String): Cell ={
+    Cell(id::ids)
+  }
+}
+
 case class Line(id: String, pos: Point2d, size: Point2d) {
-  def applyLine(cloth: Array[Array[Int]]): Unit = {
+  def applyLine(cloth: Array[Array[Cell]]): Unit = {
     for(x <- pos.x until pos.x + size.x ;
         y <- pos.y until pos.y + size.y ){
 
-      cloth(x)(y) = cloth(x)(y) + 1
+      cloth(x)(y) = cloth(x)(y).add(id)
     }
   }
 }

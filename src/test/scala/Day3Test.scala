@@ -1,3 +1,5 @@
+import java.util
+
 import Day3._
 
 import scala.io.Source.fromResource
@@ -13,7 +15,7 @@ class Day3Test extends org.scalatest.FunSuite {
   }
 
   test("Count cloth with two or more claims") {
-    var cloth = Array.ofDim[Int](1001, 1001)
+    var cloth = Array.fill[Cell](1001, 1001)(Cell(List.empty))
 
     fromResource("day3/claims.txt")
       .getLines()
@@ -22,10 +24,35 @@ class Day3Test extends org.scalatest.FunSuite {
         line.applyLine(cloth)
       })
 
-    println(cloth.flatten.count(cell => cell > 1))
+
   }
 
-  //  #1 @ 1,3: 4x4
-  //  #2 @ 3,1: 4x4
-  //  #3 @ 5,5: 2x2
+  test("Non-overlapping claim") {
+    //var cloth = Array.ofDim[Cell](1001, 1001)
+    var cloth = Array.fill[Cell](1001, 1001)(Cell(List.empty))
+
+    val lines = fromResource("day3/claims.txt")
+      .getLines()
+      .map(parseLine)
+      .toList
+
+    lines
+      .foreach(line => {
+        line.applyLine(cloth)
+      })
+
+    val allIds = lines.map(line => line.id).toSet
+
+    val allInvalidIds =
+      cloth
+      .flatten
+      .filter(cell => cell.ids.size > 1)
+      .map(c => c.ids)
+      .flatten
+      .toSet
+
+    val result = (allIds -- allInvalidIds).toList.head
+    println(result)
+    assert(result == "919")
+  }
 }
