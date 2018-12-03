@@ -14,7 +14,9 @@ class Day3Test extends org.scalatest.FunSuite {
     assert(line === expectedLine)
   }
 
-  private val emptyCloth = Array.fill[Cell](1001, 1001)(Cell(List.empty))
+  private def emptyCloth = {
+    Array.fill[Cell](1001, 1001)(Cell(List.empty))
+  }
 
   test("Count cloth with two or more claims") {
     var cloth = emptyCloth
@@ -26,7 +28,9 @@ class Day3Test extends org.scalatest.FunSuite {
         line.applyTo(cloth)
       })
 
-
+    val overlapCount = cloth.flatten.count(cell => cell.ids.size > 1)
+    println(overlapCount)
+    assert(overlapCount == 118840)
   }
 
   test("Non-overlapping claim") {
