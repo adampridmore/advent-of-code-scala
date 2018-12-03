@@ -48,3 +48,5 @@ fabric.properties
 *.log
 
 # End of https://www.gitignore.io/api/scala,intellij
+/project
+/target
