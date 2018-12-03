@@ -9,7 +9,7 @@ case class Cell(ids : List[String]) {
 }
 
 case class Line(id: String, pos: Point2d, size: Point2d) {
-  def applyLine(cloth: Array[Array[Cell]]): Unit = {
+  def applyTo(cloth: Array[Array[Cell]]): Unit = {
     for(x <- pos.x until pos.x + size.x ;
         y <- pos.y until pos.y + size.y ){
 

@@ -14,42 +14,40 @@ class Day3Test extends org.scalatest.FunSuite {
     assert(line === expectedLine)
   }
 
+  private val emptyCloth = Array.fill[Cell](1001, 1001)(Cell(List.empty))
+
   test("Count cloth with two or more claims") {
-    var cloth = Array.fill[Cell](1001, 1001)(Cell(List.empty))
+    var cloth = emptyCloth
 
     fromResource("day3/claims.txt")
       .getLines()
       .map(parseLine)
       .foreach(line => {
-        line.applyLine(cloth)
+        line.applyTo(cloth)
       })
 
 
   }
 
   test("Non-overlapping claim") {
-    //var cloth = Array.ofDim[Cell](1001, 1001)
-    var cloth = Array.fill[Cell](1001, 1001)(Cell(List.empty))
+    val cloth = emptyCloth
 
-    val lines = fromResource("day3/claims.txt")
-      .getLines()
-      .map(parseLine)
-      .toList
+    val lines =
+      fromResource("day3/claims.txt")
+        .getLines()
+        .map(parseLine)
+        .toList
 
     lines
-      .foreach(line => {
-        line.applyLine(cloth)
-      })
+      .foreach(line => line applyTo cloth)
 
     val allIds = lines.map(line => line.id).toSet
 
     val allInvalidIds =
       cloth
-      .flatten
-      .filter(cell => cell.ids.size > 1)
-      .map(c => c.ids)
-      .flatten
-      .toSet
+        .flatten
+        .filter(cell => cell.ids.size > 1).flatMap(c => c.ids)
+        .toSet
 
     val result = (allIds -- allInvalidIds).toList.head
     println(result)
