@@ -29,7 +29,7 @@ class Day3Test extends org.scalatest.FunSuite {
       })
 
     val overlapCount = cloth.flatten.count(cell => cell.ids.size > 1)
-    println(overlapCount)
+    println(s"Day 3 Part 1 : Overlapping cloth inches: $overlapCount")
     assert(overlapCount == 118840)
   }
 
@@ -54,7 +54,7 @@ class Day3Test extends org.scalatest.FunSuite {
         .toSet
 
     val result = (allIds -- allInvalidIds).toList.head
-    println(result)
+    println(s"Day 3 Part 2 : Un-overlapping claim id: $result")
     assert(result == "919")
   }
 }

@@ -21,17 +21,17 @@ class Day1Test extends org.scalatest.FunSuite {
 +3
 +1"""
 
-  val data = Source.fromResource("day1/frequencies.txt").mkString
+  private val data = Source.fromResource("day1/frequencies.txt").mkString
 
   test("Day1_frequencies_total_example") {
     val sum: Int = frequenciesTotal(exampleData)
-    println(sum)
+    assert(sum == 3)
   }
 
   test("Day_1_part1") {
     val sum = frequenciesTotal(data)
 
-    println(sum)
+    println(s"Day 1 Part 1 : Frequencies total: $sum")
 
     assert(sum === 553)
   }
@@ -57,7 +57,9 @@ class Day1Test extends org.scalatest.FunSuite {
     throw new Exception("none found")
   }
 
-  test("Day_1_part2_example") {
-    println(getFirstDuplicate(data))
+  test("Day_1_part2") {
+    val result = getFirstDuplicate(data)
+
+    println(s"Day 1 Part 2 : First duplicate frequency: $result")
   }
 }

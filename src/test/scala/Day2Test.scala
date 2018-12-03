@@ -40,7 +40,7 @@ ababab"""
   test("solve_day_part_1") {
     val result = new Day2(realData).solution_part1()
 
-    println(result)
+    println(s"Day 2 part 1 : $result")
     assert(result === 9139)
   }
 
@@ -79,7 +79,7 @@ ababab"""
         sortedData.zip(sortedData.drop(1))
           .filter({case(a,b) => a === b})
 
-      if (result.nonEmpty) println("Result: " + result(0)._1)
+      if (result.nonEmpty) println("Day 2 Part 2 : " + result(0)._1)
     }
   }
 }
