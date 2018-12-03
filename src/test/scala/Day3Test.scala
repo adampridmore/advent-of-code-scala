@@ -15,7 +15,7 @@ class Day3Test extends org.scalatest.FunSuite {
   }
 
   private def emptyCloth = {
-    Array.fill[Cell](1001, 1001)(Cell(List.empty))
+    Array.fill[Cell](1000, 1000)(Cell(List.empty))
   }
 
   test("Count cloth with two or more claims") {
