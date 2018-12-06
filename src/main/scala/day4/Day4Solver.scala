@@ -8,6 +8,46 @@ import scala.collection.mutable
 object Day4Solver {
   type Minutes = Array[Status.Value]
 
+  def parseLine(lineText: String): GuardLog = {
+    val parts = lineText.split(raw"\]")
+
+    val timestamp = parseDateTime(parts(0))
+
+    val guardId: String = parseGuardId(parts(1))
+
+    lineText match {
+      case t if t.contains("falls") => FallsAsleep(timestamp)
+      case t if t.contains("wakes") => WakesUp(timestamp)
+      case _ => BeginShift(timestamp, guardId)
+    }
+  }
+
+  def parseDateTime(str: String): SantaDate2 = {
+    val regex = raw"\[(\d+)-(\d+)-(\d+) (\d+):(\d+)".r
+    val matches = regex.findAllIn(str)
+    val month = matches.group(2).toInt
+    val day = matches.group(3).toInt
+    val hour = matches.group(4).toInt
+    val minute = matches.group(5).toInt
+
+    new SantaDate2(month, day, hour, minute)
+  }
+
+  private def parseGuardId(part: String) = {
+    part
+      .split(" ")(2)
+      .substring(1)
+  }
+
+  def parseGuardLines(textLines: Array[String]) = {
+    val sortedLines: Seq[GuardLog] =
+      textLines
+        .map(parseLine)
+        .toList
+        .sortBy(x => x.timestamp.zonedDateTime.toInstant.getEpochSecond)
+    sortedLines
+  }
+
   def processGuardLines(sortedLines: Seq[GuardLog]): mutable.HashMap[DayGuard, Minutes] = {
 
     val emptyMinutes: Minutes = Array.fill[Status.Value](60) {
@@ -26,8 +66,8 @@ object Day4Solver {
           if (currentGuardId.isDefined) {
             santaMinuteIterator(previousEventTimeStamp, previousEventTimeStamp.plusHours(1))
               .foreach(ts => {
-                println(s"$previousState - GuardId: $currentGuardId TS: ${ts.toString}")
-                dayGuardMinutes.getOrElseUpdate(DayGuard(ts.getMonthValue, ts.getDayOfMonth, guardId), emptyMinutes)(ts.getMinute) = Status.Awake
+                println(s"$previousState(init) - GuardId: $currentGuardId TS: ${ts.toString}")
+                dayGuardMinutes.getOrElseUpdate(DayGuard(ts.getMonthValue, ts.getDayOfMonth, currentGuardId.get), emptyMinutes)(ts.getMinute) = previousState
               })
             previousEventTimeStamp = timestamp.zonedDateTime
           }
@@ -40,7 +80,7 @@ object Day4Solver {
           santaMinuteIterator(previousEventTimeStamp, timestamp.zonedDateTime)
             .foreach(ts => {
               println(s"Asleep - GuardId: $currentGuardId TS: ${ts.toString}")
-              dayGuardMinutes.getOrElseUpdate(DayGuard(ts.getMonthValue, ts.getDayOfMonth, currentGuardId.get), emptyMinutes)(ts.getMinute) = Status.Asleep
+              dayGuardMinutes.getOrElseUpdate(DayGuard(ts.getMonthValue, ts.getDayOfMonth, currentGuardId.get), emptyMinutes)(ts.getMinute) = Status.Awake
             })
           previousEventTimeStamp = timestamp.zonedDateTime
           previousState = Status.Asleep
@@ -49,8 +89,8 @@ object Day4Solver {
           santaMinuteIterator(previousEventTimeStamp, timestamp.zonedDateTime)
             .foreach({
               ts =>
-                println(s"Awake  - GuardId: $currentGuardId TS: ${ts.toString}")
-                dayGuardMinutes.getOrElseUpdate(DayGuard(ts.getMonthValue, ts.getDayOfMonth, currentGuardId.get), emptyMinutes)(ts.getMinute) = Status.Awake
+                println(s"Awake - GuardId: $currentGuardId TS: ${ts.toString}")
+                dayGuardMinutes.getOrElseUpdate(DayGuard(ts.getMonthValue, ts.getDayOfMonth, currentGuardId.get), emptyMinutes)(ts.getMinute) = Status.Asleep
             })
           previousEventTimeStamp = timestamp.zonedDateTime
           previousState = Status.Awake
@@ -61,8 +101,8 @@ object Day4Solver {
     santaMinuteIterator(previousEventTimeStamp, previousEventTimeStamp.plusHours(1))
       .foreach({
         ts =>
-          println(s"$previousState - GuardId: $currentGuardId TS: ${ts.toString}")
-          dayGuardMinutes.getOrElseUpdate(DayGuard(ts.getMonthValue, ts.getDayOfMonth, currentGuardId.get), emptyMinutes)(ts.getMinute) = Status.Asleep
+          println(s"$previousState(end) - GuardId: $currentGuardId TS: ${ts.toString}")
+          dayGuardMinutes.getOrElseUpdate(DayGuard(ts.getMonthValue, ts.getDayOfMonth, currentGuardId.get), emptyMinutes)(ts.getMinute) = previousState
       })
 
     dayGuardMinutes
