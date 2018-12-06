@@ -1,8 +1,9 @@
-import java.time.{ZoneId, ZonedDateTime}
-
 import day4.Day4Solver._
+import day4.Status._
 import day4._
 import org.scalatest.FunSuite
+
+import scala.collection.{immutable, mutable}
 
 //[1518-11-01 00:00] Guard #10 begins shift
 //[1518-11-01 00:05] falls asleep
@@ -54,25 +55,41 @@ class Day4Test extends FunSuite {
     }
   }
 
-//  def exampleData =
-//    """[1518-11-01 00:00] Guard #10 begins shift
-//[1518-11-01 00:05] falls asleep
-//[1518-11-01 00:25] wakes up
-//[1518-11-01 00:30] falls asleep
-//[1518-11-01 00:55] wakes up
-//[1518-11-01 23:58] Guard #99 begins shift
-//[1518-11-02 00:40] falls asleep
-//[1518-11-02 00:50] wakes up
-//[1518-11-03 00:05] Guard #10 begins shift
-//[1518-11-03 00:24] falls asleep
-//[1518-11-03 00:29] wakes up
-//[1518-11-04 00:02] Guard #99 begins shift
-//[1518-11-04 00:36] falls asleep
-//[1518-11-04 00:46] wakes up
-//[1518-11-05 00:03] Guard #99 begins shift
-//[1518-11-05 00:45] falls asleep
-//[1518-11-05 00:55] wakes up"""
+  def exampleData =
+    """
+[1518-11-01 00:00] Guard #10 begins shift
+[1518-11-01 00:05] falls asleep
+[1518-11-01 00:25] wakes up
+[1518-11-01 00:30] falls asleep
+[1518-11-01 00:55] wakes up
+[1518-11-01 23:58] Guard #99 begins shift
+[1518-11-02 00:40] falls asleep
+[1518-11-02 00:50] wakes up
+[1518-11-03 00:05] Guard #10 begins shift
+[1518-11-03 00:24] falls asleep
+[1518-11-03 00:29] wakes up
+[1518-11-04 00:02] Guard #99 begins shift
+[1518-11-04 00:36] falls asleep
+[1518-11-04 00:46] wakes up
+[1518-11-05 00:03] Guard #99 begins shift
+[1518-11-05 00:45] falls asleep
+[1518-11-05 00:55] wakes up
+"""
 
+
+  test("Parse guard lines from raw test") {
+    def data =
+      """
+[1518-11-01 00:00] Guard #10 begins shift
+[1518-11-01 00:05] falls asleep
+[1518-11-01 00:25] wakes up
+"""
+
+    val sortedLines = parseGuardLines(data)
+
+    assert(sortedLines(0).timestamp.month == 11)
+    assert(sortedLines(0).timestamp.day == 1)
+  }
 
   test("One guard begins shift and falls asleep and wakes up") {
     def data =
@@ -80,34 +97,68 @@ class Day4Test extends FunSuite {
 [1518-11-01 00:05] falls asleep
 [1518-11-01 00:25] wakes up"""
 
-
-    val textLines = data.split("\\r\\n") //fromResource("day4/guards.txt").getLines()
-
-    val sortedLines: scala.Seq[GuardLog] = parseGuardLines(textLines)
-
-    assert(sortedLines(0).timestamp.month == 11)
-    assert(sortedLines(0).timestamp.day == 1)
+    val sortedLines = parseGuardLines(data)
 
     println(sortedLines.mkString("\r\n"))
 
-    val dayGuardMinutes =  processGuardLines(sortedLines)
+    val dayGuardMinutes = processGuardLines(sortedLines)
 
-    val minutes = dayGuardMinutes(DayGuard(11,1,"10"))
-    assert(minutes(0) == Status.Awake)
-    assert(minutes(4) == Status.Awake)
-    assert(minutes(5) == Status.Asleep)
-    assert(minutes(24) == Status.Asleep)
-    assert(minutes(25) == Status.Awake)
-    assert(minutes(59) == Status.Awake)
-
-    val r =
-      dayGuardMinutes
-        .toList
-        .sortBy(dgm=>(dgm._1.month,dgm._1.day))
-
-    println(r.mkString("\r\n"))
+    val minutes = dayGuardMinutes(DayGuard(11, 1, "10"))
+    assert(minutes(0) == Awake)
+    assert(minutes(4) == Awake)
+    assert(minutes(5) == Asleep)
+    assert(minutes(24) == Asleep)
+    assert(minutes(25) == Awake)
+    assert(minutes(59) == Awake)
   }
 
+  test("Two guards begins shift and falls asleep") {
+    def data =
+      """
+[1518-11-01 00:00] Guard #10 begins shift
+[1518-11-01 00:05] falls asleep
+[1518-11-01 00:25] wakes up
+[1518-11-02 00:00] Guard #20 begins shift
+[1518-11-02 00:10] falls asleep
+"""
 
+    val sortedLines = parseGuardLines(data)
+
+    println(sortedLines.mkString("\r\n"))
+
+    val dayGuardMinutes = processGuardLines(sortedLines)
+
+    val guardTen = dayGuardMinutes(DayGuard(11, 1, "10"))
+    assert(guardTen(0) == Awake)
+    assert(guardTen(4) == Awake)
+    assert(guardTen(5) == Asleep)
+    assert(guardTen(24) == Asleep)
+    assert(guardTen(25) == Awake)
+    assert(guardTen(59) == Awake)
+
+    val guardTwenty = dayGuardMinutes(DayGuard(11, 2, "20"))
+    assert(guardTwenty(0) == Awake)
+    assert(guardTwenty(9) == Awake)
+    assert(guardTwenty(10) == Asleep)
+    assert(guardTwenty(59) == Asleep)
+  }
+
+  test("Scratch") {
+    val sortedLines = parseGuardLines(exampleData)
+
+    //    println(sortedLines.mkString("\r\n"))
+
+    val dayGuardMinutes: mutable.Map[DayGuard, Minutes] = processGuardLines(sortedLines)
+
+    val r: (String, Int) = dayGuardMinutes
+      .groupBy(dg => dg._1.guardId)
+      .map(g=>(g._1, g._2.valuesIterator.map(mins=>mins.count(m=>m==Status.Asleep)).sum))
+      .maxBy(x=>x._2)
+
+    val guardId = r._1
+    val totalAsleepMins = r._2
+
+    println(s"Guard '$guardId' was asleep for $totalAsleepMins minutes.")
+  }
 }
 
