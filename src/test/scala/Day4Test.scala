@@ -45,7 +45,7 @@ class Day4Test extends FunSuite {
     }
   }
 
-  val realData : String = fromResource("day4/guards.txt").mkString
+  val realData: String = fromResource("day4/guards.txt").mkString
 
   def exampleData =
     """
@@ -132,7 +132,7 @@ class Day4Test extends FunSuite {
   }
 
   test("Solver for example data") {
-    val result: Int = solver(exampleData)
+    val result: Int = solver_part_1(exampleData)
 
     println(s"Result: $result")
 
@@ -140,14 +140,33 @@ class Day4Test extends FunSuite {
   }
 
   test("Solver for real data") {
-    val result: Int = solver(realData)
+    val result: Int = solver_part_1(realData)
 
     println(s"Result: $result")
 
     assert(result == 115167)
   }
 
-  private def solver(data: String) = {
+  test("Scratch") {
+    val sortedLines = parseGuardLines(realData)
+
+    val dayGuardMinutes: mutable.Map[DayGuard, Minutes] = processGuardLines(sortedLines)
+
+    val result = dayGuardMinutes
+      .groupBy({ case (dg, _) => dg.guardId })
+      .map(x => (x._1, x._2.values.flatten))
+      .map(x => (x._1, x._2.groupBy(x => x).maxBy(g => g._2.size)))
+      .map(x => (x._1, x._2._1, x._2._2.size))
+      .maxBy(x => x._3)
+
+    var answer = result._1.toInt * result._2
+
+    println(s"Answer: $answer")
+
+    assert(answer == 32070)
+  }
+
+  private def solver_part_1(data: String) = {
     val sortedLines = parseGuardLines(data)
 
     val dayGuardMinutes: mutable.Map[DayGuard, Minutes] = processGuardLines(sortedLines)
