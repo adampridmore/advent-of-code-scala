@@ -91,8 +91,6 @@ class Day4Test extends FunSuite {
 
     val sortedLines = parseGuardLines(data)
 
-    println(sortedLines.mkString("\r\n"))
-
     val dayGuardMinutes = processGuardLines(sortedLines)
 
     val minutes = dayGuardMinutes(DayGuard(11, 1, "10"))
@@ -116,8 +114,6 @@ class Day4Test extends FunSuite {
 
     val sortedLines = parseGuardLines(data)
 
-    println(sortedLines.mkString("\r\n"))
-
     val dayGuardMinutes = processGuardLines(sortedLines)
 
     val guardTen = dayGuardMinutes(DayGuard(11, 1, "10"))
@@ -135,10 +131,24 @@ class Day4Test extends FunSuite {
     assert(guardTwenty.contains(59))
   }
 
-  test("Scratch") {
-    val sortedLines = parseGuardLines(realData)
+  test("Solver for example data") {
+    val result: Int = solver(exampleData)
 
-    //    println(sortedLines.mkString("\r\n"))
+    println(s"Result: $result")
+
+    assert(result == 240)
+  }
+
+  test("Solver for real data") {
+    val result: Int = solver(realData)
+
+    println(s"Result: $result")
+
+    assert(result == 115167)
+  }
+
+  private def solver(data: String) = {
+    val sortedLines = parseGuardLines(data)
 
     val dayGuardMinutes: mutable.Map[DayGuard, Minutes] = processGuardLines(sortedLines)
 
@@ -150,25 +160,17 @@ class Day4Test extends FunSuite {
     val guardId = r._1
     val totalAsleepMins = r._2
 
-    println(s"Guard '$guardId' was asleep for $totalAsleepMins minutes.")
-
     val guardData = dayGuardMinutes.filter(dgm => dgm._1.guardId == guardId)
 
-    val (mostAsleepMinute,_) =
+    val (mostAsleepMinute, _) =
       guardData
-        .flatten(x=>x._2)
-          .groupBy(x=>x)
-          .maxBy(x=>x._2.size)
-//      guardData.flatMap {
-//        gd =>
-//          gd._2
-//            .zipWithIndex.map { case (_, minute) => minute }
-//      }
-//        .groupBy(x => x)
-//        .maxBy(g => g._2.size)
+        .flatten(x => x._2)
+        .groupBy(x => x)
+        .maxBy(x => x._2.size)
 
+    println(s"Guard '$guardId' was asleep for $totalAsleepMins minutes.")
     println(s"Most asleep minutes: $mostAsleepMinute")
-    println(s"Result: ${guardId.toInt * mostAsleepMinute}")
+
+    guardId.toInt * mostAsleepMinute
   }
 }
-

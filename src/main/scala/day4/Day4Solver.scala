@@ -13,7 +13,7 @@ object Day4Solver {
 
     val timestamp = parseDateTime(parts(0))
 
-    val guardId: String = parseGuardId(parts(1))
+    val guardId = parseGuardId(parts(1))
 
     lineText match {
       case t if t.contains("falls") => FallsAsleep(timestamp)
@@ -39,7 +39,7 @@ object Day4Solver {
     }
   }
 
-  private def parseGuardId(part: String) = {
+  private def parseGuardId(part: String): String = {
     part
       .split(" ")(2)
       .substring(1)
