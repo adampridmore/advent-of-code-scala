@@ -1,12 +1,12 @@
-//import scala.collection.mutable
 package day4
 
-import java.time.{ZoneId, ZonedDateTime}
+import java.time.ZonedDateTime
 
 import scala.collection.mutable
+import scala.collection.mutable.ListBuffer
 
 object Day4Solver {
-  type Minutes = Array[Status.Value]
+  type Minutes = ListBuffer[Int]
 
   def parseLine(lineText: String): GuardLog = {
     val parts = lineText.split(raw"\]")
@@ -34,8 +34,8 @@ object Day4Solver {
       val minute = matches.group(5).toInt
 
       new SantaDate2(month, day, hour, minute)
-    }catch {
-      case e:Exception=>throw new RuntimeException("Error on line: " + str, e)
+    } catch {
+      case e: Exception => throw new RuntimeException("Error on line: " + str, e)
     }
   }
 
@@ -45,10 +45,10 @@ object Day4Solver {
       .substring(1)
   }
 
-  def parseGuardLines(data: String) = {
+  def parseGuardLines(data: String): Seq[GuardLog] = {
     val textLines = data
       .split("\\r\\n") //fromResource("day4/guards.txt").getLines()
-      .filter(s=>s.nonEmpty)
+      .filter(s => s.nonEmpty)
 
     val sortedLines: Seq[GuardLog] =
       textLines
@@ -58,11 +58,13 @@ object Day4Solver {
     sortedLines
   }
 
+  private def logMessage(str: String): Unit = {
+    //println(str)
+  }
+
   def processGuardLines(sortedLines: Seq[GuardLog]): mutable.HashMap[DayGuard, Minutes] = {
 
-    def emptyMinutes() : Minutes = Array.fill[Status.Value](60) {
-      Status.Awake
-    }
+    def emptyMinutes(): Minutes = ListBuffer.empty[Int]
 
     val dayGuardMinutes: mutable.HashMap[DayGuard, Minutes] = new mutable.HashMap[DayGuard, Minutes]()
 
@@ -72,46 +74,50 @@ object Day4Solver {
 
     for (line <- sortedLines) {
       line match {
-        case BeginShift(timestamp, guardId) => {
+        case BeginShift(timestamp, guardId) =>
           if (currentGuardId.isDefined) {
             santaMinuteIterator(previousEventTimeStamp, previousEventTimeStamp.plusHours(2))
               .foreach(ts => {
-                println(s"$previousState(init) - GuardId: $currentGuardId TS: ${ts.toString}")
-                dayGuardMinutes.getOrElseUpdate(DayGuard(ts.getMonthValue, ts.getDayOfMonth, currentGuardId.get), emptyMinutes())(ts.getMinute) = previousState
+                logMessage(s"$previousState(init) - GuardId: $currentGuardId TS: ${ts.toString}")
+
+                if (previousState == Status.Asleep) {
+                  val minutes = dayGuardMinutes.getOrElseUpdate(DayGuard(ts.getMonthValue, ts.getDayOfMonth, currentGuardId.get), emptyMinutes())
+                  minutes.append(ts.getMinute)
+                }
               })
           }
 
           currentGuardId = Some(guardId)
           previousEventTimeStamp = timestamp.zonedDateTime
           previousState = Status.Awake
-        }
-        case FallsAsleep(timestamp) => {
+        case FallsAsleep(timestamp) =>
           santaMinuteIterator(previousEventTimeStamp, timestamp.zonedDateTime)
             .foreach(ts => {
-              println(s"Awake - GuardId: $currentGuardId TS: ${ts.toString}")
-              dayGuardMinutes.getOrElseUpdate(DayGuard(ts.getMonthValue, ts.getDayOfMonth, currentGuardId.get), emptyMinutes)(ts.getMinute) = Status.Awake
+              logMessage(s"Awake - GuardId: $currentGuardId TS: ${ts.toString}")
             })
           previousEventTimeStamp = timestamp.zonedDateTime
           previousState = Status.Asleep
-        }
-        case WakesUp(timestamp) => {
+        case WakesUp(timestamp) =>
           santaMinuteIterator(previousEventTimeStamp, timestamp.zonedDateTime)
             .foreach({
               ts =>
-                println(s"Asleep - GuardId: $currentGuardId TS: ${ts.toString}")
-                dayGuardMinutes.getOrElseUpdate(DayGuard(ts.getMonthValue, ts.getDayOfMonth, currentGuardId.get), emptyMinutes)(ts.getMinute) = Status.Asleep
+                logMessage(s"Asleep - GuardId: $currentGuardId TS: ${ts.toString}")
+                val minutes = dayGuardMinutes.getOrElseUpdate(DayGuard(ts.getMonthValue, ts.getDayOfMonth, currentGuardId.get), emptyMinutes())
+                minutes.append(ts.getMinute)
             })
           previousEventTimeStamp = timestamp.zonedDateTime
           previousState = Status.Awake
-        }
       }
     }
 
     santaMinuteIterator(previousEventTimeStamp, previousEventTimeStamp.plusHours(1))
       .foreach({
         ts =>
-          println(s"$previousState(end) - GuardId: $currentGuardId TS: ${ts.toString}")
-          dayGuardMinutes.getOrElseUpdate(DayGuard(ts.getMonthValue, ts.getDayOfMonth, currentGuardId.get), emptyMinutes)(ts.getMinute) = previousState
+          logMessage(s"$previousState(end) - GuardId: $currentGuardId TS: ${ts.toString}")
+          if (previousState == Status.Asleep) {
+            val minutes = dayGuardMinutes.getOrElseUpdate(DayGuard(ts.getMonthValue, ts.getDayOfMonth, currentGuardId.get), emptyMinutes())
+            minutes.append(ts.getMinute)
+          }
       })
 
     dayGuardMinutes

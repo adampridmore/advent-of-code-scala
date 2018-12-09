@@ -1,21 +1,9 @@
 import day4.Day4Solver._
-import day4.Status._
 import day4._
 import org.scalatest.FunSuite
 
-import scala.collection.{immutable, mutable}
+import scala.collection.mutable
 
-//[1518-11-01 00:00] Guard #10 begins shift
-//[1518-11-01 00:05] falls asleep
-//[1518-11-01 00:25] wakes up
-//[1518-11-01 00:30] falls asleep
-
-//case class SantaDate(month: Int, day: Int, hour: Int, minute: Int) extends Ordered[SantaDate] {
-//  def compare(that: SantaDate): Int = {
-//    import scala.math.Ordered.orderingToOrdered
-//    (this.month, this.day, this.hour, this.minute) compare(that.month, that.day, that.hour, that.minute)
-//  }
-//}
 
 class Day4Test extends FunSuite {
   test("Parse guard begins shift line") {
@@ -27,7 +15,7 @@ class Day4Test extends FunSuite {
     assert(line.timestamp.minute == 4)
 
     line match {
-      case x@BeginShift(_, guardId) => assert(guardId == "10")
+      case BeginShift(_, guardId) => assert(guardId == "10")
       case _ => Unit
     }
   }
@@ -36,7 +24,7 @@ class Day4Test extends FunSuite {
     val line = parseLine("[1518-01-02 03:04] falls asleep")
 
     line match {
-      case FallsAsleep(timestamp) => Unit
+      case FallsAsleep(_) => Unit
       case x => fail(s"Wrong type: ${x.getClass.toString}")
     }
 
@@ -50,7 +38,7 @@ class Day4Test extends FunSuite {
     val line = parseLine("[1518-11-01 00:25] wakes up")
 
     line match {
-      case WakesUp(timestamp) => Unit
+      case WakesUp(_) => Unit
       case x => fail(s"Wrong type: ${x.getClass.toString}")
     }
   }
@@ -87,8 +75,8 @@ class Day4Test extends FunSuite {
 
     val sortedLines = parseGuardLines(data)
 
-    assert(sortedLines(0).timestamp.month == 11)
-    assert(sortedLines(0).timestamp.day == 1)
+    assert(sortedLines.head.timestamp.month == 11)
+    assert(sortedLines.head.timestamp.day == 1)
   }
 
   test("One guard begins shift and falls asleep and wakes up") {
@@ -104,12 +92,12 @@ class Day4Test extends FunSuite {
     val dayGuardMinutes = processGuardLines(sortedLines)
 
     val minutes = dayGuardMinutes(DayGuard(11, 1, "10"))
-    assert(minutes(0) == Awake)
-    assert(minutes(4) == Awake)
-    assert(minutes(5) == Asleep)
-    assert(minutes(24) == Asleep)
-    assert(minutes(25) == Awake)
-    assert(minutes(59) == Awake)
+    assert(!minutes.contains(0))
+    assert(!minutes.contains(4))
+    assert(minutes.contains(5))
+    assert(minutes.contains(24))
+    assert(!minutes.contains(25))
+    assert(!minutes.contains(59))
   }
 
   test("Two guards begins shift and falls asleep") {
@@ -129,18 +117,18 @@ class Day4Test extends FunSuite {
     val dayGuardMinutes = processGuardLines(sortedLines)
 
     val guardTen = dayGuardMinutes(DayGuard(11, 1, "10"))
-    assert(guardTen(0) == Awake)
-    assert(guardTen(4) == Awake)
-    assert(guardTen(5) == Asleep)
-    assert(guardTen(24) == Asleep)
-    assert(guardTen(25) == Awake)
-    assert(guardTen(59) == Awake)
+    assert(!guardTen.contains(0))
+    assert(!guardTen.contains(4))
+    assert(guardTen.contains(5))
+    assert(guardTen.contains(24))
+    assert(!guardTen.contains(25))
+    assert(!guardTen.contains(59))
 
     val guardTwenty = dayGuardMinutes(DayGuard(11, 2, "20"))
-    assert(guardTwenty(0) == Awake)
-    assert(guardTwenty(9) == Awake)
-    assert(guardTwenty(10) == Asleep)
-    assert(guardTwenty(59) == Asleep)
+    assert(!guardTwenty.contains(0))
+    assert(!guardTwenty.contains(9))
+    assert(guardTwenty.contains(10))
+    assert(guardTwenty.contains(59))
   }
 
   test("Scratch") {
@@ -152,7 +140,7 @@ class Day4Test extends FunSuite {
 
     val r: (String, Int) = dayGuardMinutes
       .groupBy(dg => dg._1.guardId)
-      .map(g => (g._1, g._2.valuesIterator.map(mins => mins.count(m => m == Status.Asleep)).sum))
+      .map(g => (g._1, g._2.valuesIterator.map(mins => mins.length).sum))
       .maxBy(x => x._2)
 
     val guardId = r._1
@@ -161,25 +149,22 @@ class Day4Test extends FunSuite {
     println(s"Guard '$guardId' was asleep for $totalAsleepMins minutes.")
 
     val guardData = dayGuardMinutes.filter(dgm => dgm._1.guardId == guardId)
-    val result =
+
+    val (mostAsleepMinute,_) =
       guardData
-        .map({
-          gd =>
-            gd._2
-              .filter(m => m == Status.Asleep)
-              .zipWithIndex.map { case (_, minute) => minute }
-        })
-        .flatten
+        .flatten(x=>x._2)
+          .groupBy(x=>x)
+          .maxBy(x=>x._2.size)
+//      guardData.flatMap {
+//        gd =>
+//          gd._2
+//            .zipWithIndex.map { case (_, minute) => minute }
+//      }
+//        .groupBy(x => x)
+//        .maxBy(g => g._2.size)
 
-    //      .filter(m=>m==Status.Asleep)
-    //      .zipWithIndex.map{case (element, index) => index}
-    //      .groupBy(x=>x)
-    //      .maxBy(group=>group._2.toList.length)
-
-    println(result.mkString("\r\n"))
-
-    //    val mostFrequentMin = result._1
-    //    println("Most frequent asleep minute: " + mostFrequentMin)
+    println(s"Most asleep minutes: $mostAsleepMinute")
+    println(s"Result: ${guardId.toInt * mostAsleepMinute}")
   }
 }
 
