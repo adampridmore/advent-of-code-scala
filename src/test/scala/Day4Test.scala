@@ -152,13 +152,34 @@ class Day4Test extends FunSuite {
 
     val r: (String, Int) = dayGuardMinutes
       .groupBy(dg => dg._1.guardId)
-      .map(g=>(g._1, g._2.valuesIterator.map(mins=>mins.count(m=>m==Status.Asleep)).sum))
-      .maxBy(x=>x._2)
+      .map(g => (g._1, g._2.valuesIterator.map(mins => mins.count(m => m == Status.Asleep)).sum))
+      .maxBy(x => x._2)
 
     val guardId = r._1
     val totalAsleepMins = r._2
 
     println(s"Guard '$guardId' was asleep for $totalAsleepMins minutes.")
+
+    val guardData = dayGuardMinutes.filter(dgm => dgm._1.guardId == guardId)
+    val result =
+      guardData
+        .map({
+          gd =>
+            gd._2
+              .filter(m => m == Status.Asleep)
+              .zipWithIndex.map { case (_, minute) => minute }
+        })
+        .flatten
+
+    //      .filter(m=>m==Status.Asleep)
+    //      .zipWithIndex.map{case (element, index) => index}
+    //      .groupBy(x=>x)
+    //      .maxBy(group=>group._2.toList.length)
+
+    println(result.mkString("\r\n"))
+
+    //    val mostFrequentMin = result._1
+    //    println("Most frequent asleep minute: " + mostFrequentMin)
   }
 }
 
