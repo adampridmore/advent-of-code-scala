@@ -3,6 +3,8 @@ import day4._
 import org.scalatest.FunSuite
 
 import scala.collection.mutable
+import scala.io.BufferedSource
+import scala.io.Source.fromResource
 
 
 class Day4Test extends FunSuite {
@@ -42,6 +44,8 @@ class Day4Test extends FunSuite {
       case x => fail(s"Wrong type: ${x.getClass.toString}")
     }
   }
+
+  val realData : String = fromResource("day4/guards.txt").mkString
 
   def exampleData =
     """
@@ -132,7 +136,7 @@ class Day4Test extends FunSuite {
   }
 
   test("Scratch") {
-    val sortedLines = parseGuardLines(exampleData)
+    val sortedLines = parseGuardLines(realData)
 
     //    println(sortedLines.mkString("\r\n"))
 
