@@ -114,7 +114,7 @@ class Day5Test extends FunSuite {
   }
 
   test("Day 5 part 2 - Example data") {
-    val data = realData
+    val data = exampleData
 
     val result: Int = Day5.solverPart2(data)
 
@@ -122,7 +122,7 @@ class Day5Test extends FunSuite {
     assert(result === 4)
   }
 
-  test("Day 5 part 2 - Real data") {
+  ignore("Day 5 part 2 - Real data") {
     val data = realData
 
     val result: Int = Day5.solverPart2(data)
