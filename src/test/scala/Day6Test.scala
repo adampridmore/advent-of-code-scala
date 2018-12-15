@@ -15,19 +15,18 @@ class Day6Test extends FunSuite {
 
   def parseLines(data: String): List[Point] = {
     def parse(line: String) : Point = {
-      val parts = line
-        .split(",")
-        .map(s=>s.trim)
-        .map(s=>s.toInt)
+      val regex = raw"(\d+), (\d+)".r
 
-      val x = parts(0)
-      val y = parts(1)
+      val matches = regex.findAllIn(line)
+      val x = matches.group(1).toInt
+      val y = matches.group(2).toInt
+
       Point(x,y)
     }
 
     exampleData
       .lines
-      .filter(s=>s.nonEmpty)
+      .filter(_.nonEmpty)
       .map(parse)
       .toList
   }
@@ -36,6 +35,5 @@ class Day6Test extends FunSuite {
     val lines = parseLines(exampleData)
 
     println(lines.mkString("\r\n"))
-
   }
 }
