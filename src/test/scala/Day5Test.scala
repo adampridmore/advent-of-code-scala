@@ -13,29 +13,40 @@ class Day5Test extends FunSuite {
   }
 
   def solver(data: String): String = {
-    val characters = data.toList
-    val newData = new mutable.ListBuffer[Char]()
 
     var skipNext = false
+    var wasReaction = false
 
-    characters
-      .zip(characters.drop(1)).foreach { case (a, b) =>
+    var newData: mutable.ListBuffer[Char] = mutable.ListBuffer[Char]()
+    var characters: mutable.ListBuffer[Char] = mutable.ListBuffer[Char]()
+    data.foreach(c=>characters.append(c))
 
-      if (skipNext) {
-        skipNext = false
-      } else {
-        if (react(a, b)) {
-          skipNext = true
+    do {
+      wasReaction = false
+
+      characters
+        .zip(characters.drop(1)).foreach { case (a, b) =>
+        if (skipNext) {
+          skipNext = false
         } else {
-          newData.append(a)
+          if (react(a, b)) {
+            skipNext = true
+            wasReaction = true
+          } else {
+            newData.append(a)
+          }
         }
       }
-    }
-    if (!skipNext) {
-      newData.append(exampleData.last)
-    }
+      if (!skipNext) {
+        newData.append(exampleData.last)
+      }
 
-    newData.mkString("")
+      characters = newData.clone()
+      newData = mutable.ListBuffer.empty[Char]
+
+    } while (wasReaction)
+
+    characters.mkString("")
   }
 
   test("React") {
@@ -47,8 +58,6 @@ class Day5Test extends FunSuite {
   test("Scratch") {
     val solved = solver(exampleData)
 
-    //    assert(newData.mkString("") == "dabAcCaCBAcCcaDA")
-    assert(solved.mkString("") == "dabAaCBAcaDA")
-    //assert(solved.length == 10)
+    assert(solved.mkString("") == "dabCBAcaDA")
   }
 }
