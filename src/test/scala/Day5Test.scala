@@ -62,7 +62,6 @@ class Day5Test extends FunSuite {
     println(s"Length: ${result.length} : $result")
 
     assert(result.mkString("") == "dabCBAcaDA")
-
   }
 
   test("Real data solver") {
@@ -104,13 +103,17 @@ class Day5Test extends FunSuite {
     println(listToString(list))
   }
 
-  //@tailrec
   final def applyReaction2(list: List[Char]): List[Char] = {
-    list match {
-      case head :: Nil => List(head)
-      case a :: b :: tail if react(a, b) => applyReaction2(tail)
-      case head :: tail => List(head) ::: applyReaction2(tail)
+    @tailrec
+    def apply(acc: List[Char], list: List[Char]): List[Char] = {
+      list match {
+        case head :: Nil => acc ::: List(head)
+        case a :: b :: tail if react(a, b) => apply(acc, tail)
+        case head :: tail => apply(acc ::: List(head) , tail)
+      }
     }
+
+    apply(List.empty[Char], list)
   }
 
   test("Reaction2 abcd") {
@@ -134,6 +137,8 @@ class Day5Test extends FunSuite {
       } else {
         dataArray = reacted
       }
+
+      println(dataArray.length)
     } while (!done)
 
     dataArray.mkString("")
