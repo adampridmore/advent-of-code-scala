@@ -1,6 +1,7 @@
 import org.scalatest.FunSuite
 
 import scala.collection.mutable
+import scala.io.Source.fromResource
 
 class Day5Test extends FunSuite {
   def exampleData = "dabAcCaCBAcCcaDA"
@@ -55,9 +56,20 @@ class Day5Test extends FunSuite {
     assert(react('A', 'a'))
   }
 
-  test("Scratch") {
-    val solved = solver(exampleData)
+  test("Example data solver") {
+    val result = solver(exampleData)
 
-    assert(solved.mkString("") == "dabCBAcaDA")
+    println(s"Length: ${result.length} : $result")
+
+    assert(result.mkString("") == "dabCBAcaDA")
+
+  }
+
+  test("Real data solver"){
+    val realData: String = fromResource("day5/data.txt").mkString
+
+    val result = solver(realData)
+
+    println(s"Length: ${result.length} : $result")
   }
 }
