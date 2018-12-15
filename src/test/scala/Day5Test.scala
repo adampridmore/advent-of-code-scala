@@ -1,54 +1,13 @@
-import org.scalatest.{FunSuite, Ignore}
+import Day5.{react, solver}
+import org.scalatest.FunSuite
 
 import scala.annotation.tailrec
-import scala.collection.mutable
 import scala.io.Source.fromResource
 
 class Day5Test extends FunSuite {
-  def exampleData = "dabAcCaCBAcCcaDA"
+  def exampleData: String = "dabAcCaCBAcCcaDA"
 
-  def react(a: Char, b: Char): Boolean = {
-    (a.toLower == b.toLower, a.isUpper, b.isUpper) match {
-      case (true, case1, case2) if case1 != case2 => true
-      case _ => false
-    }
-  }
-
-  def solver(data: String): String = {
-
-    var skipNext = false
-    var wasReaction = false
-
-    var newData: mutable.ListBuffer[Char] = mutable.ListBuffer[Char]()
-    var characters: mutable.ListBuffer[Char] = mutable.ListBuffer[Char]()
-    data.foreach(c => characters.append(c))
-    do {
-      wasReaction = false
-
-      characters
-        .zip(characters.drop(1)).foreach { case (a, b) =>
-        if (skipNext) {
-          skipNext = false
-        } else {
-          if (react(a, b)) {
-            skipNext = true
-            wasReaction = true
-          } else {
-            newData.append(a)
-          }
-        }
-      }
-      if (!skipNext) {
-        newData.append(exampleData.last)
-      }
-
-      characters = newData.clone()
-      newData = mutable.ListBuffer.empty[Char]
-
-    } while (wasReaction)
-
-    characters.mkString("")
-  }
+  def realData: String = fromResource("day5/data.txt").mkString
 
   test("React") {
     assert(!react('A', 'B'))
@@ -75,13 +34,6 @@ class Day5Test extends FunSuite {
   }
 
   test("Simple solver") {
-    //    val data = "abc"
-    //    def solver2 (data: String) = {
-    //      data
-    //    }
-    //
-    //    solver2(data)
-
     val list = List(1, 2, 3, 4, 5)
 
     def myMap(list: List[Int]): List[Int] = {
@@ -109,7 +61,7 @@ class Day5Test extends FunSuite {
       list match {
         case head :: Nil => acc ::: List(head)
         case a :: b :: tail if react(a, b) => apply(acc, tail)
-        case head :: tail => apply(acc ::: List(head) , tail)
+        case head :: tail => apply(acc ::: List(head), tail)
       }
     }
 
@@ -154,12 +106,28 @@ class Day5Test extends FunSuite {
   }
 
   ignore("Reaction2 Real data solver") {
-    val realData: String = fromResource("day5/data.txt").mkString
-
     val result = solver2(realData)
 
     println(s"Length: ${result.length} : $result")
 
     assert(result.length === 10450)
+  }
+
+  test("Day 5 part 2 - Example data") {
+    val data = realData
+
+    val result: Int = Day5.solverPart2(data)
+
+    println(result)
+    assert(result === 4)
+  }
+
+  test("Day 5 part 2 - Real data") {
+    val data = realData
+
+    val result: Int = Day5.solverPart2(data)
+
+    println(result)
+    assert(result === 4624)
   }
 }
