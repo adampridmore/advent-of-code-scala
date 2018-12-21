@@ -5,17 +5,16 @@ import scala.language.implicitConversions
 
 class HelpersTest extends FunSuite {
 
-  object MyExtensions {
-
-    class RichList(list: List[Int]) {
+  object Extensions {
+    class SeqExtensions[T](list: Seq[T]) {
       def myLength2: Int = list.length
 
-      def mapi[T](fn: (Int, Int) => T): List[T] = {
+      def mapi(fn: (T, Int) => T): Seq[T] = {
         list.zipWithIndex.map { case (a, b) => fn(a, b) }
       }
     }
 
-    implicit def richList(list: List[Int]): RichList = new RichList(list)
+    implicit def seqExtensions[T](list: Seq[T]): SeqExtensions[T] = new SeqExtensions[T](list)
   }
 
   def myLength(l: List[Int]): Int = {
@@ -23,7 +22,7 @@ class HelpersTest extends FunSuite {
   }
 
   test("Scratch implicit conversions") {
-    import MyExtensions.richList
+    import Extensions.seqExtensions
 
     val l = List(1, 2, 3, 4)
     val myL = myLength(l)
@@ -31,7 +30,7 @@ class HelpersTest extends FunSuite {
   }
 
   test("Scratch mapi") {
-    import MyExtensions.richList
+    import Extensions.seqExtensions
 
     val listBuffer = new ListBuffer[Int]
 
