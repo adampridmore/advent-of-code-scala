@@ -2,6 +2,8 @@ package Day6
 
 import org.scalatest.FunSuite
 
+import scala.collection.immutable
+
 class Day6Test extends FunSuite {
   val exampleData =
     """
@@ -74,14 +76,16 @@ class Day6Test extends FunSuite {
 
   test("Draw example data") {
     val points: Seq[Point] = parseLines(exampleData)
-    def getClosestDanger(dangers: Seq[Danger], point: Point): Closest = {
-      val (danger, _) =
+
+    def getClosestDanger(dangers: Seq[Danger], point: Point): Cell = {
+      val closest: Seq[(Danger, Int)] =
         dangers
           .map(danger => (danger, danger.point.distance(point)))
-          .minBy { case (_, distance) => distance }
+          .sortBy{ case (_, distance) => distance }
+          .take(2).toList
 
-      // TODO - If two are closest, return empty
-      Closest(danger)
+      if (closest(0)._2 == closest(1)._2) EmptyCell()
+      else  Closest(closest.head._1)
     }
 
     val dangers = points
