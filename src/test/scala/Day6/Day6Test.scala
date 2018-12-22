@@ -65,20 +65,22 @@ class Day6Test extends FunSuite {
     ()
   }
 
+  def intToLetter(i: Int): String = {
+    val letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    letters(i).toString
+    //i.toString
+  }
+
+  def asCell(c: Cell): Cell = c
+
   test("Draw example data") {
-    def intToLetter(i: Int): String = {
-      val letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-      letters(i).toString
-      //i.toString
-    }
+    val points: Seq[Point] = parseLines(exampleData)
 
-    val dangerByPoint =
-      parseLines(exampleData)
+    val dangerByPoint: Map[Point, Danger] =
+      points
         .zipWithIndex
-        .map { case (line, i) => (Point(line.x, line.y), Danger(intToLetter(i))) }
+        .map { case (p, i) => (p, Danger(intToLetter(i))) }
         .toMap
-
-    def asCell(c: Cell): Cell = c
 
     def coordinateToCell(x: Int, y: Int): Cell = {
       dangerByPoint.get(Point(x, y)) match {
