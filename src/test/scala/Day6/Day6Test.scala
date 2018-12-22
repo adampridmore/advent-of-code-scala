@@ -2,8 +2,6 @@ package Day6
 
 import org.scalatest.FunSuite
 
-import scala.collection.immutable
-
 class Day6Test extends FunSuite {
   val exampleData =
     """
@@ -47,10 +45,11 @@ class Day6Test extends FunSuite {
   def printGrid(grid: Array[Array[Cell]]): Unit = {
     def lineToText(line: Array[Cell]): String = {
 
-      def cellToString(c: Cell) = {
+      def cellToString(c: Cell): String = {
         c match {
           case EmptyCell() => "."
-          case Danger(name) => name.toString
+          case Danger(name, _) => name.toString
+          case Closest(danger) => danger.name.toLowerCase()
         }
       }
 
@@ -75,24 +74,36 @@ class Day6Test extends FunSuite {
 
   test("Draw example data") {
     val points: Seq[Point] = parseLines(exampleData)
+    def getClosestDanger(dangers: Seq[Danger], point: Point): Closest = {
+      val (danger, _) =
+        dangers
+          .map(danger => (danger, danger.point.distance(point)))
+          .minBy { case (_, distance) => distance }
+
+      // TODO - If two are closest, return empty
+      Closest(danger)
+    }
+
+    val dangers = points
+      .zipWithIndex
+      .map { case (p, i) => Danger(intToLetter(i), p) }
 
     val dangerByPoint: Map[Point, Danger] =
-      points
-        .zipWithIndex
-        .map { case (p, i) => (p, Danger(intToLetter(i))) }
+      dangers
+        .map { d => (d.point, d) }
         .toMap
 
-    def coordinateToCell(x: Int, y: Int): Cell = {
-      dangerByPoint.get(Point(x, y)) match {
-        case Some(danger: Danger) => asCell(danger)
-        case None => asCell(EmptyCell())
+    def coordinateToCell(dangers: Seq[Danger], point: Point): Cell = {
+      dangerByPoint.get(point) match {
+        case Some(danger: Danger) => danger
+        case None => getClosestDanger(dangers, point)
       }
     }
 
     val grid: Array[Array[Cell]] =
-      (for (x <- 0 to 9) yield {
-        (for (y <- 0 to 9) yield {
-          coordinateToCell(x, y)
+      (for (y <- 0 to 9) yield {
+        (for (x <- 0 to 9) yield {
+          coordinateToCell(dangers,Point(x, y))
         }).toArray
       }).toArray
 
