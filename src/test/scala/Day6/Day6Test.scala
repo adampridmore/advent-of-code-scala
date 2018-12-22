@@ -49,7 +49,6 @@ class Day6Test extends FunSuite {
         c match {
           case EmptyCell() => "."
           case Danger(name) => name.toString
-          //case c => throw new RuntimeException(s"Unknown cell type:${c.getClass.toString}")
         }
       }
 
@@ -65,11 +64,16 @@ class Day6Test extends FunSuite {
   }
 
   test("Draw example data") {
-    val grid: Array[Array[Cell]] = Array.fill[Cell](10, 10) (EmptyCell())
+    val grid: Array[Array[Cell]] = Array.fill[Cell](10, 10)(EmptyCell())
+
+    def intToLetter(i: Int): String = {
+      val letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+      letters(i).toString
+    }
 
     parseLines(exampleData)
       .zipWithIndex
-      .foreach { case (line, i) => grid(line.x)(line.y) = Danger(i.toString) }
+      .foreach { case (line, i) => grid(line.x)(line.y) = Danger(intToLetter(i)) }
 
     printGrid(grid)
   }
