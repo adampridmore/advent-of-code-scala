@@ -1,9 +1,5 @@
 package Day6
 
-object Day6 {
-  type Grid = Array[Array[Cell]]
-}
-
 sealed trait Cell{}
 
 case class Danger(name: String, point: Point) extends Cell
