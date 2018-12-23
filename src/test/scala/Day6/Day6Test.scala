@@ -54,15 +54,15 @@ class Day6Test extends FunSuite {
 
       def cellToString(c: Cell): String = {
         c match {
-          case EmptyCell() => "(..)"
-          case Danger(name, _) => s"(${name.toString.padTo(2, " ").mkString})"
-          case Closest(danger) => s"(${danger.name.toLowerCase().padTo(2, " ").mkString})"
+          case EmptyCell() => ".."
+          case Danger(name, _) => s"${name.toString.padTo(2, " ").mkString}"
+          case Closest(danger) => s"${danger.name.toLowerCase().padTo(2, " ").mkString}"
         }
       }
 
       line
         .map(cellToString)
-        .mkString("")
+        .mkString(",")
     }
 
     val text = grid.map(lineToText).mkString("\r\n")
@@ -80,12 +80,17 @@ class Day6Test extends FunSuite {
   def asCell(c: Cell): Cell = c
 
   test("Draw example data") {
-    val data = exampleData
-//    val data = realData
+    //    val data = exampleData
+    //    val gridSize = 10
+
+    val data = realData
+    val gridSize = 400
 
     val points: Seq[Point] = parseLines(data)
-    val gridSize = points.flatMap(p => List(p.x, p.y))
-      .max
+
+    //    val gridSize = points.flatMap(p => List(p.x, p.y))
+    //      .max + 1
+
 
     def getClosestDanger(dangers: Seq[Danger], point: Point): Cell = {
       val closest: Seq[(Danger, Int)] =
@@ -121,21 +126,41 @@ class Day6Test extends FunSuite {
         }).toArray
       }).toArray
 
-    val results: (io.Serializable, Array[Cell]) =
+    def cellToName(cell: Cell) = {
+      cell match {
+        case Closest(d) => d.name
+        case d: Danger => d.name
+      }
+    }
+
+    val results =
       grid.flatten.filter {
         case Closest(_) => true
         case Danger(_, _) => true
         case EmptyCell() => false
-      }.groupBy {
-        case Closest(d) => d.name
-        case d: Danger => d.name
-      }.maxBy{case(_,values) => values.length}
+      }.groupBy(cellToName)
 
-    // Need to filter 'infinite' dangers
+    val edges = (for (y <- 0 until gridSize) yield {
+      List(grid(y)(0), grid(y)(gridSize - 1))
+    })
+      .flatten
+      .filter(cell => cell match {
+        case EmptyCell() => false
+        case _ => true
+      })
+      .distinct
+      .map(cellToName)
+      .toSet
 
-    println(s"${results._1} - ${results._2.length.toString}")
+    val finalResult =
+      results
+        .filterNot { case (name: String, _) => edges.contains(name) }
+        .maxBy { case (name, cells) => cells.length }
 
-    println(s"Size:$gridSize")
+    println(s"Size: ${finalResult._2.length} Point: ${finalResult._1}")
+    println(s"Grid size:$gridSize")
+
+    println("Edges: " + edges.mkString(","))
     printGrid(grid)
   }
 }
