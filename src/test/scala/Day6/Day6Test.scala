@@ -4,6 +4,7 @@ import java.io
 
 import org.scalatest.FunSuite
 
+import scala.collection.immutable
 import scala.io.Source.fromResource
 
 class Day6Test extends FunSuite {
@@ -140,10 +141,18 @@ class Day6Test extends FunSuite {
         case EmptyCell() => false
       }.groupBy(cellToName)
 
-    val edges = (for (y <- 0 until gridSize) yield {
-      List(grid(y)(0), grid(y)(gridSize - 1))
-    })
-      .flatten
+    val sideCoordinates: Seq[(Int, Int)] =
+      (for (y <- 1 until gridSize - 1) yield {
+        List((0, y), (gridSize - 1, y))
+      }).flatten
+
+    val topTopBottomCoordinates: Seq[(Int, Int)] =
+      (for (x <- 1 until gridSize - 1) yield {
+        List((x, 0), (x, gridSize - 1))
+      }).flatten
+
+    val edges = (sideCoordinates ++ topTopBottomCoordinates)
+      .map { case (x, y) => grid(y)(x) }
       .filter(cell => cell match {
         case EmptyCell() => false
         case _ => true
@@ -156,6 +165,8 @@ class Day6Test extends FunSuite {
       results
         .filterNot { case (name: String, _) => edges.contains(name) }
         .maxBy { case (name, cells) => cells.length }
+
+    //Part1 solution: 5975
 
     println(s"Size: ${finalResult._2.length} Point: ${finalResult._1}")
     println(s"Grid size:$gridSize")
