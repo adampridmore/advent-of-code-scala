@@ -1,10 +1,13 @@
 package Day6
 
+import java.io
+
 import org.scalatest.FunSuite
 
-import scala.collection.immutable
+import scala.io.Source.fromResource
 
 class Day6Test extends FunSuite {
+
   val exampleData =
     """
 1, 1
@@ -14,6 +17,8 @@ class Day6Test extends FunSuite {
 5, 5
 8, 9
 """
+
+  def realData: String = fromResource("day6/Data.txt").mkString
 
   def parseLines(data: String): List[Point] = {
     def parse(line: String): Point = {
@@ -26,7 +31,7 @@ class Day6Test extends FunSuite {
       Point(x, y)
     }
 
-    exampleData
+    data
       .lines
       .filter(_.nonEmpty)
       .map(parse)
@@ -49,9 +54,9 @@ class Day6Test extends FunSuite {
 
       def cellToString(c: Cell): String = {
         c match {
-          case EmptyCell() => "."
-          case Danger(name, _) => name.toString
-          case Closest(danger) => danger.name.toLowerCase()
+          case EmptyCell() => "(..)"
+          case Danger(name, _) => s"(${name.toString.padTo(2, " ").mkString})"
+          case Closest(danger) => s"(${danger.name.toLowerCase().padTo(2, " ").mkString})"
         }
       }
 
@@ -67,25 +72,30 @@ class Day6Test extends FunSuite {
   }
 
   def intToLetter(i: Int): String = {
-    val letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-    letters(i).toString
-    //i.toString
+    //val letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    //letters(i%letters.length).toString
+    i.toString
   }
 
   def asCell(c: Cell): Cell = c
 
   test("Draw example data") {
-    val points: Seq[Point] = parseLines(exampleData)
+    val data = exampleData
+//    val data = realData
+
+    val points: Seq[Point] = parseLines(data)
+    val gridSize = points.flatMap(p => List(p.x, p.y))
+      .max
 
     def getClosestDanger(dangers: Seq[Danger], point: Point): Cell = {
       val closest: Seq[(Danger, Int)] =
         dangers
           .map(danger => (danger, danger.point.distance(point)))
-          .sortBy{ case (_, distance) => distance }
+          .sortBy { case (_, distance) => distance }
           .take(2).toList
 
       if (closest(0)._2 == closest(1)._2) EmptyCell()
-      else  Closest(closest.head._1)
+      else Closest(closest.head._1)
     }
 
     val dangers = points
@@ -104,13 +114,28 @@ class Day6Test extends FunSuite {
       }
     }
 
-    val grid: Array[Array[Cell]] =
-      (for (y <- 0 to 9) yield {
-        (for (x <- 0 to 9) yield {
-          coordinateToCell(dangers,Point(x, y))
+    val grid: Day6.Grid =
+      (for (y <- 0 until gridSize) yield {
+        (for (x <- 0 until gridSize) yield {
+          coordinateToCell(dangers, Point(x, y))
         }).toArray
       }).toArray
 
+    val results: (io.Serializable, Array[Cell]) =
+      grid.flatten.filter {
+        case Closest(_) => true
+        case Danger(_, _) => true
+        case EmptyCell() => false
+      }.groupBy {
+        case Closest(d) => d.name
+        case d: Danger => d.name
+      }.maxBy{case(_,values) => values.length}
+
+    // Need to filter 'infinite' dangers
+
+    println(s"${results._1} - ${results._2.length.toString}")
+
+    println(s"Size:$gridSize")
     printGrid(grid)
   }
 }
