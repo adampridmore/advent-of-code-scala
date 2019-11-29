@@ -160,7 +160,7 @@ class Day4Test extends FunSuite {
       .map(x => (x._1, x._2._1, x._2._2.size))
       .maxBy(x => x._3)
 
-    var answer = result._1.toInt * result._2
+    val answer = result._1.toInt * result._2
 
     println(s"Answer: $answer")
 

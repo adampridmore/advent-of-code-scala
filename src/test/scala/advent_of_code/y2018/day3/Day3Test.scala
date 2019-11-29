@@ -21,7 +21,7 @@ class Day3Test extends org.scalatest.FunSuite {
   }
 
   test("Count cloth with two or more claims") {
-    var cloth = emptyCloth
+    val cloth = emptyCloth
 
     fromResource("day3/claims.txt")
       .getLines()

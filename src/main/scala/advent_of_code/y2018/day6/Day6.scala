@@ -115,7 +115,7 @@ object Day6 {
     val finalResult =
       results
         .filterNot { case (name: String, _) => edges.contains(name) }
-        .maxBy { case (name, cells) => cells.length }
+        .maxBy { case (_, cells) => cells.length }
 
     val solution = finalResult._2.length
 

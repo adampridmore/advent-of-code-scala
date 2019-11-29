@@ -72,12 +72,12 @@ class Day5Test extends FunSuite {
   }
 
   test("Reaction2 abcd") {
-    var reacted = applyReaction2("abcd".toCharArray.toList).mkString("")
+    val reacted = applyReaction2("abcd".toCharArray.toList).mkString("")
     assert(reacted === "abcd")
   }
 
   test("Reaction2 abBc") {
-    var reacted = applyReaction2("abBc".toCharArray.toList).mkString("")
+    val reacted = applyReaction2("abBc".toCharArray.toList).mkString("")
     assert(reacted === "ac")
   }
 
@@ -101,7 +101,7 @@ class Day5Test extends FunSuite {
 
   test("Reaction2 exampleData") {
 
-    var reactedData = solver2(exampleData)
+    val reactedData = solver2(exampleData)
 
     println(exampleData + "\r\n" + reactedData)
 

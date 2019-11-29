@@ -51,7 +51,7 @@ class Day6Test extends FunSuite {
     val data = realData
     val gridSize = 400
 
-    val (solution, grid) = Day6.solver(data, gridSize)
+    val (solution, _) = Day6.solver(data, gridSize)
 
     println(s"Size: $solution")
     println(s"Grid size:$gridSize")
