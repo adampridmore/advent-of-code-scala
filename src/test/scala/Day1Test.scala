@@ -11,7 +11,7 @@ class Day1Test extends org.scalatest.FunSuite {
 
   private def parseInputLines(inputText: String) = {
     inputText
-      .split("\\r\\n")
+      .split("\\r?\\n")
       .map(Integer.parseInt)
   }
 

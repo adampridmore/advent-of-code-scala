@@ -47,7 +47,7 @@ object Day4Solver {
 
   def parseGuardLines(data: String): Seq[GuardLog] = {
     val textLines = data
-      .split("\\r\\n") //fromResource("day4/guards.txt").getLines()
+      .split("\\r?\\n") //fromResource("day4/guards.txt").getLines()
       .filter(s => s.nonEmpty)
 
     val sortedLines: Seq[GuardLog] =
