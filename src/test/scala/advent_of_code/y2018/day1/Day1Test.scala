@@ -23,7 +23,7 @@ class Day1Test extends org.scalatest.FunSuite {
 +3
 +1"""
 
-  private val data = Source.fromResource("day1/frequencies.txt").mkString
+  private val data = Source.fromResource("advent_of_code/y2018/day1/frequencies.txt").mkString
 
   test("Day1_frequencies_total_example") {
     val sum: Int = frequenciesTotal(exampleData)

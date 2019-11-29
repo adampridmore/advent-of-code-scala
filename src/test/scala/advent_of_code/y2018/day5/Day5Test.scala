@@ -10,7 +10,7 @@ import scala.io.Source.fromResource
 class Day5Test extends FunSuite {
   def exampleData: String = "dabAcCaCBAcCcaDA"
 
-  def realData: String = fromResource("day5/data.txt").mkString
+  def realData: String = fromResource("advent_of_code/y2018/day5/data.txt").mkString
 
   test("React") {
     assert(!react('A', 'B'))
@@ -27,7 +27,7 @@ class Day5Test extends FunSuite {
   }
 
   test("Real data solver") {
-    val realData: String = fromResource("day5/data.txt").mkString
+    val realData: String = fromResource("advent_of_code/y2018/day5/data.txt").mkString
 
     val result = solver(realData)
 

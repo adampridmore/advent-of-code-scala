@@ -26,7 +26,7 @@ aabcdd
 abcdee
 ababab"""
 
-  private val realData = Source.fromResource("day2/input.txt").mkString
+  private val realData = Source.fromResource("advent_of_code/y2018/day2/input.txt").mkString
 
   test("parse_text_to_string_list") {
     val list = parseTextToLines(exampleData)

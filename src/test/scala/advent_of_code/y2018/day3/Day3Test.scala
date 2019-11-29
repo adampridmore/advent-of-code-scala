@@ -1,7 +1,6 @@
 package advent_of_code.y2018.day3
 
 import advent_of_code.y2018.day3.Day3._
-import advent_of_code.y2018.day3.{Cell, Line, Point2d}
 
 import scala.io.Source.fromResource
 
@@ -23,7 +22,7 @@ class Day3Test extends org.scalatest.FunSuite {
   test("Count cloth with two or more claims") {
     val cloth = emptyCloth
 
-    fromResource("day3/claims.txt")
+    fromResource("advent_of_code/y2018/day3/claims.txt")
       .getLines()
       .map(parseLine)
       .foreach(line => {
@@ -39,7 +38,7 @@ class Day3Test extends org.scalatest.FunSuite {
     val cloth = emptyCloth
 
     val lines =
-      fromResource("day3/claims.txt")
+      fromResource("advent_of_code/y2018/day3/claims.txt")
         .getLines()
         .map(parseLine)
         .toList
