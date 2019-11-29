@@ -1,3 +1,5 @@
+package advent_of_code.Y2018.day1
+
 import java.util
 
 import scala.io.Source

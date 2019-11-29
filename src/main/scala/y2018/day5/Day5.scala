@@ -1,3 +1,5 @@
+package y2018.day5
+
 import scala.collection.mutable
 
 object Day5 {

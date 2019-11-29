@@ -1,4 +1,6 @@
-import Day2._
+package advent_of_code.Y2018.day2
+
+import advent_of_code.Y2018.day2.Day2._
 
 import scala.io.Source
 

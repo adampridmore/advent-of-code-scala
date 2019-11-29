@@ -1,8 +1,10 @@
+package advent_of_code.Y2018
+
 import org.scalatest.FunSuite
 
 import scala.collection.mutable.ListBuffer
 import scala.language.implicitConversions
-import Extensions.seqExtensions
+import y2018.Extensions._
 
 class HelpersTest extends FunSuite {
   test("Length extension method") {
@@ -11,7 +13,6 @@ class HelpersTest extends FunSuite {
   }
 
   test("Map with index") {
-    import Extensions.seqExtensions
 
     val listBuffer = new ListBuffer[Int]
 

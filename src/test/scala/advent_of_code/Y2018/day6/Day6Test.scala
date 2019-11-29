@@ -1,4 +1,6 @@
-package Day6
+package advent_of_code.Y2018.day6
+
+import y2018.day6._
 
 import org.scalatest.FunSuite
 

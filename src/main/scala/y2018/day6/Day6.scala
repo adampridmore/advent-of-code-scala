@@ -1,4 +1,6 @@
-package Day6
+package y2018.day6
+
+import y2018.day6.Day6._
 
 object Day6 {
   type Grid = Array[Array[Cell]]

@@ -1,3 +1,5 @@
+package y2018.day3
+
 case class Point2d(x: Int, y: Int) {}
 
 case class Cell(ids : List[String]) {

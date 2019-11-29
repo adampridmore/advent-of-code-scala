@@ -1,4 +1,4 @@
-package day4
+package y2018.day4
 
 abstract class GuardLog(val timestamp: SantaDate2) {}
 

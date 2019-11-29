@@ -1,11 +1,13 @@
-import java.util
+package advent_of_code.Y2018.day3
 
-import Day3._
+import y2018.day3.Day3._
+import y2018.day3.{Cell, Line, Point2d}
 
 import scala.io.Source.fromResource
 
+
 class Day3Test extends org.scalatest.FunSuite {
-  test("Parse Line") {
+  test("Parse y2018.day3.Line") {
     val lineText = "#10 @ 20,30: 40x50"
 
     val line = parseLine(lineText)

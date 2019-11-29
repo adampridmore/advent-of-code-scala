@@ -1,5 +1,8 @@
-import Day5.{react, solver}
+package advent_of_code.Y2018.day5
+
 import org.scalatest.FunSuite
+import y2018.day5.Day5
+import y2018.day5.Day5.{react, solver}
 
 import scala.annotation.tailrec
 import scala.io.Source.fromResource

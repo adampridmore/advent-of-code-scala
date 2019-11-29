@@ -1,4 +1,4 @@
-package day4
+package y2018.day4
 
 import java.time.ZonedDateTime
 
@@ -47,7 +47,7 @@ object Day4Solver {
 
   def parseGuardLines(data: String): Seq[GuardLog] = {
     val textLines = data
-      .split("\\r?\\n") //fromResource("day4/guards.txt").getLines()
+      .split("\\r?\\n") //fromResource("y2018.day4/guards.txt").getLines()
       .filter(s => s.nonEmpty)
 
     val sortedLines: Seq[GuardLog] =

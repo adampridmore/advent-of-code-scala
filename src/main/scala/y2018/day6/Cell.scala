@@ -1,4 +1,4 @@
-package Day6
+package y2018.day6
 
 sealed trait Cell{}
 

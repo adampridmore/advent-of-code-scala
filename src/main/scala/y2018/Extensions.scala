@@ -1,3 +1,5 @@
+package y2018
+
 object Extensions {
   class SeqExtensions[T](list: Seq[T]) {
     def myLength2: Int = list.length

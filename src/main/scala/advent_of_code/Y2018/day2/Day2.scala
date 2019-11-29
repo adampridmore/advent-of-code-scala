@@ -1,3 +1,5 @@
+package advent_of_code.Y2018.day2
+
 import Day2._
 
 class Day2(data: String) {
