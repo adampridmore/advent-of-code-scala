@@ -1,4 +1,4 @@
-package advent_of_code.Y2018.day2
+package advent_of_code.y2018.day2
 
 import Day2._
 

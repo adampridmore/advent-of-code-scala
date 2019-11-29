@@ -1,10 +1,10 @@
-package advent_of_code.Y2018
+package advent_of_code.y2018
 
 import org.scalatest.FunSuite
 
 import scala.collection.mutable.ListBuffer
 import scala.language.implicitConversions
-import y2018.Extensions._
+import advent_of_code.y2018.Extensions._
 
 class HelpersTest extends FunSuite {
   test("Length extension method") {

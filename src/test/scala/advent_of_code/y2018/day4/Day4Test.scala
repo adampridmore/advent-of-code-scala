@@ -1,8 +1,8 @@
-package advent_of_code.Y2018.day4
+package advent_of_code.y2018.day4
 
 import org.scalatest.FunSuite
-import y2018.day4.Day4Solver._
-import y2018.day4._
+import advent_of_code.y2018.day4.Day4Solver._
+import advent_of_code.y2018.day4._
 
 import scala.collection.mutable
 import scala.io.Source.fromResource
@@ -46,7 +46,7 @@ class Day4Test extends FunSuite {
     }
   }
 
-  val realData: String = fromResource("y2018/day4/guards.txt").mkString
+  val realData: String = fromResource("advent_of_code/y2018/day4/guards.txt").mkString
 
   def exampleData =
     """

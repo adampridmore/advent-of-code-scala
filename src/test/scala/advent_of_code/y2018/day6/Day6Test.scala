@@ -1,6 +1,6 @@
-package advent_of_code.Y2018.day6
+package advent_of_code.y2018.day6
 
-import y2018.day6._
+import advent_of_code.y2018.day6._
 
 import org.scalatest.FunSuite
 
@@ -18,7 +18,7 @@ class Day6Test extends FunSuite {
 8, 9
 """
 
-  def realData: String = fromResource("day6/Data.txt").mkString
+  def realData: String = fromResource("advent_of_code/y2018/day6/Data.txt").mkString
 
   test("Scratch") {
     val lines = Day6.parseLines(exampleData)

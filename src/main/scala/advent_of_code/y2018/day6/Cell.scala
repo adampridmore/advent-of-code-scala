@@ -1,4 +1,4 @@
-package y2018.day6
+package advent_of_code.y2018.day6
 
 sealed trait Cell{}
 

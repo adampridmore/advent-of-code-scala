@@ -1,4 +1,4 @@
-package y2018.day3
+package advent_of_code.y2018.day3
 
 case class Point2d(x: Int, y: Int) {}
 

@@ -1,4 +1,4 @@
-package y2018
+package advent_of_code.y2018
 
 object Extensions {
   class SeqExtensions[T](list: Seq[T]) {

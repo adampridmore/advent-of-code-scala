@@ -1,4 +1,4 @@
-package y2018.day5
+package advent_of_code.y2018.day5
 
 import scala.collection.mutable
 
