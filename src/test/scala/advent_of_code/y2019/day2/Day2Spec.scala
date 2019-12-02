@@ -4,11 +4,11 @@ import org.scalatest.{Matchers, WordSpec}
 import sun.plugin.dom.exception.InvalidStateException
 
 import scala.annotation.tailrec
-import scala.collection.mutable.{ArrayBuffer, ListBuffer}
+import scala.collection.mutable.ArrayBuffer
 import scala.io.Source.fromResource
 
 class Day2Spec extends WordSpec with Matchers {
-  def readInputAsIntegers() = {
+  def readInputAsIntegers(): ArrayBuffer[Int] = {
     val items = fromResource("advent_of_code/y2019/day2/input.txt")
       .mkString
       .split(',')
@@ -17,7 +17,6 @@ class Day2Spec extends WordSpec with Matchers {
 
     ArrayBuffer(items: _*)
   }
-
 
   def executeInstruction(memory: ArrayBuffer[Int]): Any = {
 
@@ -36,20 +35,18 @@ class Day2Spec extends WordSpec with Matchers {
     @tailrec
     def loop(programCounter: Int): Int = {
       memory(programCounter) match {
-        case 1 => {
-          addOpCode(programCounter);
+        case 1 =>
+          addOpCode(programCounter)
           loop(programCounter + 4)
-        }
-        case 2 => {
-          multiplyOpCode(programCounter);
+        case 2 =>
+          multiplyOpCode(programCounter)
           loop(programCounter + 4)
-        }
         case 99 => 0
         case op => throw new InvalidStateException(s"Unexpected op code: $op at $programCounter")
       }
     }
 
-    loop(0)
+    loop(programCounter = 0)
   }
 
   "Part I" should {
@@ -61,6 +58,8 @@ class Day2Spec extends WordSpec with Matchers {
       executeInstruction(memory)
 
       println(memory)
+
+      memory should be(ArrayBuffer(3500, 9, 10, 70, 2, 3, 11, 0, 99, 30, 40, 50))
     }
 
     "Solution" in {
