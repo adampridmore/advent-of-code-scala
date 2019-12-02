@@ -1,7 +1,6 @@
 package advent_of_code.y2019.day2
 
 import org.scalatest.{Matchers, WordSpec}
-import sun.plugin.dom.exception.InvalidStateException
 
 import scala.annotation.tailrec
 import scala.collection.mutable.ArrayBuffer
@@ -18,7 +17,10 @@ class Day2Spec extends WordSpec with Matchers {
     ArrayBuffer(items: _*)
   }
 
-  def executeInstruction(memory: ArrayBuffer[Int]): Any = {
+  def executeInstruction(memory: ArrayBuffer[Int], noun: Int, verb: Int): Any = {
+
+    memory(1) = noun
+    memory(2) = verb
 
     def doOpCode(programCounter: Int, op: (Int, Int) => Int): Any = {
       memory(memory(programCounter + 3)) = op(memory(memory(programCounter + 1)), memory(memory(programCounter + 2)))
@@ -41,8 +43,8 @@ class Day2Spec extends WordSpec with Matchers {
         case 2 =>
           multiplyOpCode(programCounter)
           loop(programCounter + 4)
-        case 99 => 0
-        case op => throw new InvalidStateException(s"Unexpected op code: $op at $programCounter")
+        case 99 => programCounter
+        case op => throw new Exception(s"Unexpected op code: $op at $programCounter")
       }
     }
 
@@ -55,7 +57,7 @@ class Day2Spec extends WordSpec with Matchers {
 
       println(memory)
 
-      executeInstruction(memory)
+      executeInstruction(memory, noun = 9, verb = 10)
 
       println(memory)
 
@@ -67,10 +69,10 @@ class Day2Spec extends WordSpec with Matchers {
       println(memory)
 
       // Patch data (from puzzle)
-      memory(1) = 12
-      memory(2) = 2
+      val noun = 12
+      val verb = 2
 
-      executeInstruction(memory)
+      executeInstruction(memory, noun, verb)
 
       println("Day2 part 1 = " + memory(0))
       // 7594646
@@ -78,7 +80,28 @@ class Day2Spec extends WordSpec with Matchers {
   }
 
   "part II" should {
-    "Other stuff" in {
+    "Solution" in {
+
+      def solver(noun: Int, verb: Int): Int ={
+        val memory = readInputAsIntegers();
+
+        executeInstruction(memory, noun, verb)
+        memory(0)
+      }
+
+      val toMatch = 19690720
+
+      val (noun, verb)  = (for {
+        noun <- 0 to 99
+        verb <- 0 to 99
+        solution = solver(noun, verb)
+        if solution == toMatch
+      } yield (noun, verb)).head
+
+      println(s"Noun = $noun, verb = $verb")
+
+      println("Day 2 - part 2 = " + (100 * noun + verb))
+      // Solution: 3376
     }
   }
 }
