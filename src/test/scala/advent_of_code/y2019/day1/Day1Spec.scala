@@ -6,8 +6,6 @@ import scala.io.Source.fromResource
 
 class Day1Spec extends WordSpec with Matchers {
   def calculateFuel(mass: Int): Int = {
-    // take its mass, divide by three, round down, and subtract 2.
-
     (mass / 3) - 2
   }
 
