@@ -8,7 +8,7 @@ class Day3Spec extends WordSpec with Matchers {
   def readInput(): (Seq[String], Seq[String]) = {
     val items = fromResource("advent_of_code/y2019/day3/input.txt")
       .getLines().toList
-      .map(row => row.split(","))
+      .map(_.split(","))
 
     (items.head, items(1))
   }
@@ -17,13 +17,27 @@ class Day3Spec extends WordSpec with Matchers {
     def manhattanDistance: Int = Math.abs(column) + Math.abs(row)
   }
 
-  case class Grid(size: Int = 3000) {
+  trait Cell {
+    def getChar: Char
+  }
 
-    type Cell = Char
+  case class Wire(index: Int) extends Cell {
+    override def getChar: Char = index.toString.toCharArray.head
+  }
+
+  case object Empty extends Cell {
+    override def getChar: Char = ' '
+  }
+
+  case object Crosses extends Cell {
+    override def getChar: Char = 'x'
+  }
+
+  case class Grid(size: Int = 3000) {
 
     def solve(lines: Seq[Seq[String]]): Grid = {
       lines.zipWithIndex
-        .foreach({ case (line, index) => executeLine(line, index.toString.charAt(0)) })
+        .foreach({ case (line, index) => executeLine(line, index) })
 
       this
     }
@@ -32,7 +46,7 @@ class Day3Spec extends WordSpec with Matchers {
       for {
         row <- grid.indices
         col <- grid(0).indices
-        if grid(row)(col) == crossCell
+        if grid(row)(col) == Crosses
       } yield Position(col - size / 2, size / 2 - row)
     }
 
@@ -41,56 +55,56 @@ class Day3Spec extends WordSpec with Matchers {
       (split._1, split._2.toInt)
     }
 
-    def drawPoints(plots: Seq[Position])(lineCharacter: Char): Unit = {
+    def drawPoints(plots: Seq[Position])(lineIndex: Int): Unit = {
       plots.foreach(plot => {
         //                println(s"plot: $plot")
         val pen = grid(plot.row)(plot.column) match {
-          case cell if cell == emptyCell => lineCharacter
-          case cell if cell == lineCharacter => lineCharacter
-          case _ => crossCell
+          case cell if cell == Empty => Wire(lineIndex)
+          case cell if cell == Wire(lineIndex) => Wire(lineIndex)
+          case _ => Crosses
         }
 
         grid(plot.row)(plot.column) = pen
       })
     }
 
-    def drawLineDown(start: Position)(length: Int)(lineCharacter: Char): Unit = {
+    def drawLineDown(start: Position)(length: Int)(lineIndex: Int): Unit = {
       drawPoints(for {
         i <- start.row + 1 to (start.row + length)
 
-      } yield Position(start.column, i))(lineCharacter)
+      } yield Position(start.column, i))(lineIndex)
     }
 
-    def drawLineUp(start: Position)(length: Int)(lineCharacter: Char): Unit = {
+    def drawLineUp(start: Position)(length: Int)(lineIndex: Int): Unit = {
       drawPoints(for {
         i <- (start.row - length) until start.row
 
-      } yield Position(start.column, i))(lineCharacter)
+      } yield Position(start.column, i))(lineIndex)
     }
 
-    def drawLineRight(start: Position)(length: Int)(lineCharacter: Char): Unit = {
+    def drawLineRight(start: Position)(length: Int)(lineIndex: Int): Unit = {
       drawPoints(for {
         i <- start.column + 1 to (start.column + length)
-      } yield Position(i, start.row))(lineCharacter)
+      } yield Position(i, start.row))(lineIndex)
     }
 
-    def drawLineLeft(start: Position)(length: Int)(lineCharacter: Char): Unit = {
+    def drawLineLeft(start: Position)(length: Int)(lineIndex: Int): Unit = {
       drawPoints(for {
         i <- (start.column - length) until start.column
-      } yield Position(i, start.row))(lineCharacter)
+      } yield Position(i, start.row))(lineIndex)
     }
 
-    def executeLine(line: Seq[String], lineCharacter: Char): Unit = {
+    def executeLine(line: Seq[String], lineIndex: Int): Unit = {
 
       var currentPosition = Position(size / 2, size / 2)
 
       line
         .foreach(command => {
           currentPosition = parseCommand(command) match {
-            case ("R", i) => drawLineRight(currentPosition)(i)(lineCharacter); currentPosition.copy(column = currentPosition.column + i)
-            case ("L", i) => drawLineLeft(currentPosition)(i)(lineCharacter); currentPosition.copy(column = currentPosition.column - i)
-            case ("U", i) => drawLineUp(currentPosition)(i)(lineCharacter); currentPosition.copy(row = currentPosition.row - i)
-            case ("D", i) => drawLineDown(currentPosition)(i)(lineCharacter); currentPosition.copy(row = currentPosition.row + i)
+            case ("R", i) => drawLineRight(currentPosition)(i)(lineIndex); currentPosition.copy(column = currentPosition.column + i)
+            case ("L", i) => drawLineLeft(currentPosition)(i)(lineIndex); currentPosition.copy(column = currentPosition.column - i)
+            case ("U", i) => drawLineUp(currentPosition)(i)(lineIndex); currentPosition.copy(row = currentPosition.row - i)
+            case ("D", i) => drawLineDown(currentPosition)(i)(lineIndex); currentPosition.copy(row = currentPosition.row + i)
             case _ => throw new RuntimeException(s"Invalid Command: $command")
           }
         })
@@ -98,7 +112,7 @@ class Day3Spec extends WordSpec with Matchers {
 
     private def emptyGrid(): Array[Array[Cell]] = {
 
-      val grid = Array.fill(size, size)(emptyCell)
+      val grid = Array.fill[Cell](size, size)(Empty)
 
       println("Grid created")
 
@@ -107,12 +121,9 @@ class Day3Spec extends WordSpec with Matchers {
 
     def print(): Unit = {
       println(grid
-        .map(row => row.mkString(""))
+        .map(_.map(_.getChar).mkString)
         .mkString("\n"))
     }
-
-    val emptyCell: Cell = '.'
-    val crossCell: Cell = 'x'
 
     val grid: Array[Array[Cell]] = emptyGrid()
   }
@@ -129,7 +140,7 @@ class Day3Spec extends WordSpec with Matchers {
       grid.print()
 
       val minDistance = grid.getCrosses
-        .map(x => x.manhattanDistance)
+        .map(_.manhattanDistance)
         .min
 
       println(s"minDistance: $minDistance")
@@ -161,27 +172,59 @@ class Day3Spec extends WordSpec with Matchers {
 
       println(crosses.mkString(","))
 
-      val distances = crosses.map(x => x.manhattanDistance)
+      val distances = crosses.map(_.manhattanDistance)
 
       println(s"minDistance: ${distances.min}")
 
-      distances.min should be (159)
+      distances.min should be(159)
+    }
+  }
+
+  class Stopwatch {
+    private val start = System.nanoTime()
+
+    def print(name: String): Unit = {
+      val durationMs = (System.nanoTime() - start) / 1000000
+
+      println(s"$name - ${durationMs}ms")
     }
   }
 
   "part II" should {
     "Solution" in {
+
+      val stopwatch = new Stopwatch()
+
+      stopwatch.print("10")
+
       val (line1, line2) = readInput()
 
-      val sol = Grid(18000)
-        .solve(List(line1, line2))
+      stopwatch.print("20")
+
+      val grid = Grid(18000)
+
+      stopwatch.print("30")
+
+      val solved = grid.solve(List(line1, line2))
+
+      stopwatch.print("40")
+
+      //      solved.print
+
+      stopwatch.print("50")
+
+      val sol = solved
         .getCrosses
-        .map(x => x.manhattanDistance)
-        .min
+        .minBy(_.manhattanDistance)
+        .manhattanDistance
+
+      stopwatch.print("60")
 
       println(sol)
 
       sol should be(731)
+
+      stopwatch.print("70")
     }
   }
 }
