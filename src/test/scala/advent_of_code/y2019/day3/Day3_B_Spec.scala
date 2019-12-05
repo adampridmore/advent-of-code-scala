@@ -2,6 +2,7 @@ package advent_of_code.y2019.day3
 
 import org.scalatest.{Matchers, WordSpec}
 
+import scala.annotation.tailrec
 import scala.io.Source.fromResource
 
 class Day3_B_Spec extends WordSpec with Matchers {
@@ -51,13 +52,15 @@ class Day3_B_Spec extends WordSpec with Matchers {
   object Commands {
     def toPositions(start: Position)(commands: Seq[Command]) : Seq[Position] = {
 
-      def fn(positions: Seq[Position], commands: Seq[Command]): (Seq[Position], Seq[Command]) = {
+      @tailrec
+      def fn(positions: Seq[Position], commands: Seq[Command]): Seq[Position] = {
         commands match {
           case command :: tailCommands => fn(positions ++ command.execute(positions.last), tailCommands)
-          case _ => (positions, Seq.empty)
+          case _ => positions
         }
       }
-      fn(Seq(start), commands)._1.tail
+
+      fn(Seq(start), commands).tail
     }
   }
 
