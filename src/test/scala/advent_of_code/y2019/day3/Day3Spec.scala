@@ -258,7 +258,7 @@ class Day3Spec extends WordSpec with Matchers {
 //      stopwatch.print("70")
     }
 
-    "Solution Part 2" in {
+    "Solution Part 2" ignore {
 
       val stopwatch = new Stopwatch()
 
