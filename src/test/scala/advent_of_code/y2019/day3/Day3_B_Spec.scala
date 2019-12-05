@@ -53,14 +53,17 @@ class Day3_B_Spec extends WordSpec with Matchers {
     def toPositions(start: Position)(commands: Seq[Command]) : Seq[Position] = {
 
       @tailrec
-      def fn(positions: Seq[Position], commands: Seq[Command]): Seq[Position] = {
+      def fn(currentPosition: Position, positions: Seq[Position], commands: Seq[Command]): Seq[Position] = {
         commands match {
-          case command :: tailCommands => fn(positions ++ command.execute(positions.last), tailCommands)
+          case command :: tailCommands => {
+            val newPositions = command.execute(currentPosition)
+            fn(newPositions.last, positions ++ newPositions, tailCommands)
+          }
           case _ => positions
         }
       }
 
-      fn(Seq(start), commands).tail
+      fn(start, Seq.empty, commands)
     }
   }
 
